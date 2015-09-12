@@ -1,0 +1,40 @@
+Libraries to be used:
+
+* Serial comm
+* GUI
+* Graph Plot
+* time
+* Threading
+* argparse for commandline arguments
+* numpy for list and array conversions
+
+
+Libraries for GUI
+
+* GTK
+* PyQT5
+* WxWidgets
+
+
+Tools to build GUI
+
+* Glade
+* Tkinter (Tk GUI Toolkit)
+* QT Designer
+
+
+Serial Communication
+
+*pyserial
+
+
+Graph plot
+
+* Matplotlib
+
+
+Time taken for python program to plot and store one value = 3ms
+
+For actual parallelization in Python, you should use the multiprocessing module to fork multiple processes that execute in parallel (due to the global interpreter lock, Python threads provide interleaving but are in fact executed serially, not in parallel, and are only useful when interleaving I/O operations).
+
+However, if you are merely looking for interleaving (or are doing I/O operations that can be parallelized despite the global interpreter lock), then the threading module is the place to start. 
