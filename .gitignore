@@ -61,3 +61,8 @@ target/
 
 #dolphin directory
 .directory
+
+testing/
+Old/
+graphs
+test.csv
