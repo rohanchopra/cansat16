@@ -65,4 +65,4 @@ target/
 testing/
 Old/
 graphs
-test.csv
+*.csv
