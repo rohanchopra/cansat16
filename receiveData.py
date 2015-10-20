@@ -5,6 +5,8 @@ import serial
 import argparse
 import time
 
+
+
 # create parser
 parser = argparse.ArgumentParser(description="Serial")
 # add expected arguments
@@ -15,7 +17,7 @@ strPort = args.port
 
 comm = serial.Serial(strPort, 9600, timeout=0, xonxoff=False, rtscts=False, dsrdtr=False)
 
-#comm = serial.Serial('/dev/ttyACM2', 9600, timeout=0, xonxoff=False, rtscts=False, dsrdtr=False)
+
 
 class storage:
   def __init__(self):
@@ -27,6 +29,7 @@ class storage:
 
   def main(self):
     while(1):
+      
       
       received = comm.readline().decode('utf-8').strip('\x00')
       readings = received.split(',')
@@ -40,7 +43,23 @@ class storage:
     
       print("Line = "+line)
       
-      time.sleep(1)
+      #time.sleep(1)
+      #TODO cross thread communication
+
+
+      
+      
+  def triggerFailsafe(self):
+    #TODO failsafe
+    print("Triggered")
+  def disconnectTelemetry(self):
+    #TODO disconnect
+    print("Disconnected")
+  def reconnectTelemetry(self):
+    #TODO reconnect
+    print("Reconnected")
+
+
 
 if __name__=="__main__":
   store = storage()
