@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>CanSat GCS</string>
+   <string>CanSat '16 GCS</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -331,7 +331,7 @@ Telemetry</string>
           <item>
            <layout class="QHBoxLayout" name="velocityCheckLayout">
             <item>
-             <widget class="QCheckBox" name="pitotCheck">
+             <widget class="QCheckBox" name="pitotVelocityCheck">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -347,7 +347,7 @@ Telemetry</string>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="gpsCheck">
+             <widget class="QCheckBox" name="gpsVelocityCheck">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -386,6 +386,36 @@ Telemetry</string>
           </item>
           <item>
            <layout class="QVBoxLayout" name="altitudeLayout"/>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="altitudeCheckLayout">
+            <item>
+             <widget class="QCheckBox" name="sensorAltitudeCheck">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Sensor</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="gpsAltitudeCheck">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>GPS</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>

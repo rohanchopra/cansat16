@@ -11,11 +11,13 @@ import time
 parser = argparse.ArgumentParser(description="Serial")
 # add expected arguments
 parser.add_argument('--port', dest='port', required=True)
+parser.add_argument('--baud', dest='baud', required=True)
 # parse args
 args = parser.parse_args()
 strPort = args.port
+baud = args.baud
 
-comm = serial.Serial(strPort, 9600, timeout=0, xonxoff=False, rtscts=False, dsrdtr=False)
+comm = serial.Serial(strPort, baud, timeout=0, xonxoff=False, rtscts=False, dsrdtr=False)
 
 
 
@@ -58,8 +60,7 @@ class storage:
   def reconnectTelemetry(self):
     #TODO reconnect
     print("Reconnected")
-
-
+  
 
 if __name__=="__main__":
   store = storage()
