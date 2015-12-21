@@ -6,6 +6,7 @@ import sys
 import subprocess
 import time
 import matplotlib
+import json
 
 import zmq
 from  multiprocessing import Process
@@ -46,16 +47,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     self.zmqThread = zmqWorker()
     self.zmqThread.mySignal.connect(self.print_message)
-    
+    self.zmqThread.timeSignal.connect(self.update_packetcount)
+    self.zmqThread.voltageSignal.connect(self.update_voltage)
     
     
     #self.temperatureLayout.addWidget(self.canvas)
     
     
     self.workerThread = Test()
-    self.workerThread.mySignal.connect(self.on_change)
+    self.workerThread.mySignal.connect(self.update_packetcount)
     
-    self.portEdit.setText('/dev/ttyACM0')
+    self.portEdit.setText('/dev/ttyACM3')
     self.baudRateEdit.setText('9600')
     self.failsafeCheck.stateChanged.connect(self.fail_safe)
     self.connectButton.clicked.connect(self.connect_cansat)
@@ -68,6 +70,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     self.sensorAltitudeCheck.stateChanged.connect(self.sensor_altitude)
     self.gpsAltitudeCheck.stateChanged.connect(self.gps_altitude)
     
+    
+  def update_packetcount(self,time):
+    self.missionTimeText.setText(time)
+    
+  def update_voltage(self,voltage):
+    self.voltageText.setText(voltage)
+  
   def print_message(self,text):
     print(text)
   
@@ -84,15 +93,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
   def connect_cansat(self):
     port = self.portEdit.text()
     baud = self.baudRateEdit.text()
-    self.pro = subprocess.Popen("python3 receiveData.py --port "+port+" --baud "+baud, shell=True)
+    self.pro = subprocess.Popen("python3 receiveData.py --port "+port+" --baud "+baud, shell=True,preexec_fn=os.setsid)
     self.zmqThread.start()
     #subprocess.Popen("python3 iprint.py", shell=True)
     pass
   def telemetry_toggle(self):
-    self.workerThread.start()
+    #self.workerThread.start()
     pass
   def deploy_failsafe(self):
-    self.workerThread.terminate()
+    #self.workerThread.terminate()
     pass
   def in_temp(self):
     pass
@@ -121,10 +130,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                               QMessageBox.Yes | QMessageBox.No)
     if choice == QMessageBox.Yes:
       print("Exiting")
-      #work_receiver.close()
-      #context.Term()
-      #self.results_sender.close()
-      #zmq_ctx_destroy()
+      #self.pro.kill()
+      os.killpg(self.pro.pid, signal.SIGTERM)
       sys.exit()
     else:
       pass
@@ -158,6 +165,8 @@ class Test(QThread):
 class zmqWorker(QThread):
   
   mySignal = pyqtSignal(str) 
+  timeSignal = pyqtSignal(str)
+  voltageSignal = pyqtSignal(str)
   def __init__(self):
       super().__init__()
       
@@ -166,19 +175,18 @@ class zmqWorker(QThread):
 
       # Set up a channel to receive work from the ventilator
       self.work_receiver = context.socket(zmq.REQ)
-      self.work_receiver.connect('tcp://127.0.0.1:5547')
+      self.work_receiver.connect('tcp://127.0.0.1:5552')
 
   def run(self):
     while True:
       self.work_receiver.send('1'.encode("utf-8"))
-      work_message = self.work_receiver.recv()    
-      self.mySignal.emit(work_message.decode("utf-8"))
+      work_message = self.work_receiver.recv()  
+      decoded = json.loads(work_message.decode("utf-8"))
+      self.timeSignal.emit(decoded["PacketCount"])
+      #self.mySignal.emit(work_message.decode("utf-8"))
+      self.voltageSignal.emit(decoded["Voltage"])
     
-  def __del__(self):
-      print("here")
-      self.work_receiver.close()
-      self.context.term()
-      #context.Term()
+
 if __name__ == '__main__':
   app = QApplication(sys.argv)
   

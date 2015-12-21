@@ -2,6 +2,7 @@
 
 import os
 import serial 
+import json
 import sys
 import argparse
 import time
@@ -34,7 +35,7 @@ class storage:
  
     # Set up a channel to send work
     self.ventilator_send = self.context.socket(zmq.REP)
-    self.ventilator_send.bind('tcp://127.0.0.1:5547')
+    self.ventilator_send.bind('tcp://127.0.0.1:5552')
     
     if not os.path.exists("test.csv"):
       with open("test.csv", "a") as myfile:
@@ -54,7 +55,7 @@ class storage:
             received = received + receive.split('\n')[0]
             break
           received = received + receive
-          
+        received = received.split('\r')[0]  
         readings = received.split(',')
         if(received==""): 
           continue
@@ -67,23 +68,40 @@ class storage:
         with open("test.csv", "a") as myfile:
           myfile.write(received)
         line = received
-        #line = received.split('\n')[0];
+        
       
         #print("Line = "+line)
         
        
         #TODO cross thread communication
         
+        jsonReadings = {}
+        jsonReadings["TeamID"] = readings[0]
+        jsonReadings["PacketCount"] = readings[1]
+        jsonReadings["AltSensor"] = readings[2]
+        jsonReadings["Pressure"] = readings[3]
+        jsonReadings["Speed"] = readings[4]
+        jsonReadings["Temp"] = readings[5]
+        jsonReadings["Voltage"] = readings[6]
+        jsonReadings["GPSLatitude"] = readings[7]
+        jsonReadings["GPSLongitude"] = readings[8]
+        jsonReadings["GPSAltitude"] = readings[9]
+        jsonReadings["GPSSatNum"] = readings[10]
+        jsonReadings["GPSSpeed"] = readings[11]
+        jsonReadings["CommandTime"] = readings[12]
+        jsonReadings["CommandCount"] = readings[13]
+         
+        json_data = json.dumps(jsonReadings)
+        
        
         msg = self.ventilator_send.recv()
-        self.ventilator_send.send(line.encode("utf-8"))
+        self.ventilator_send.send(json_data.encode("utf-8"))
         
         
         
         time.sleep(0.5)
       except:
-        self.ventilator_send.close()
-        #self.context.Term()
+        pass
       
   def triggerFailsafe(self):
     #TODO failsafe
@@ -94,10 +112,7 @@ class storage:
   def reconnectTelemetry(self):
     #TODO reconnect
     print("Reconnected")
-  
-  def __del__(self):
-    self.ventilator_send.close()
-    self.context.term()
+    
 
 if __name__=="__main__":
   store = storage()
