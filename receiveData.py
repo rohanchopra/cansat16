@@ -27,6 +27,8 @@ except:
   sys.exit()
 print ("baud = "+strbaud+"\nport = "+strPort+"\nStarted Receiving")
 line = ""
+
+
 class storage:
   def __init__(self):
       
@@ -35,7 +37,7 @@ class storage:
  
     # Set up a channel to send work
     self.ventilator_send = self.context.socket(zmq.REP)
-    self.ventilator_send.bind('tcp://127.0.0.1:5552')
+    self.ventilator_send.connect('tcp://127.0.0.1:5552')
     
     if not os.path.exists("test.csv"):
       with open("test.csv", "a") as myfile:
@@ -44,7 +46,7 @@ class storage:
 
   def main(self):
   
-  
+    flag=0
     while(1):
       try:
         global line
@@ -69,11 +71,12 @@ class storage:
           myfile.write(received)
         line = received
         
-      
-        #print("Line = "+line)
-        
-       
-        #TODO cross thread communication
+        #handling arduino uno reset remove when capacitor available
+        if(flag==0 and int(readings[1])==1):
+          flag=1
+        if(flag==0):
+          continue
+
         
         jsonReadings = {}
         jsonReadings["TeamID"] = readings[0]
@@ -93,7 +96,6 @@ class storage:
          
         json_data = json.dumps(jsonReadings)
         
-       
         msg = self.ventilator_send.recv()
         self.ventilator_send.send(json_data.encode("utf-8"))
         
