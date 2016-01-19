@@ -37,7 +37,7 @@ class storage:
  
     # Set up a channel to send work
     self.ventilator_send = self.context.socket(zmq.REP)
-    self.ventilator_send.connect('tcp://127.0.0.1:5552')
+    self.ventilator_send.connect('tcp://127.0.0.1:5540')
     
     if not os.path.exists("test.csv"):
       with open("test.csv", "a") as myfile:
@@ -68,9 +68,9 @@ class storage:
         #TODO acknowledge
         #comm.write(("Received"+str(readings[1])).encode('utf-8'));
         with open("test.csv", "a") as myfile:
-          myfile.write(received)
+          myfile.write(received+'\n')
         line = received
-        
+        print(readings[1])
         #handling arduino uno reset remove when capacitor available
         if(flag==0 and int(readings[1])==1):
           flag=1
@@ -95,8 +95,9 @@ class storage:
         jsonReadings["CommandCount"] = readings[13]
          
         json_data = json.dumps(jsonReadings)
-        
+       
         msg = self.ventilator_send.recv()
+        
         self.ventilator_send.send(json_data.encode("utf-8"))
         
         

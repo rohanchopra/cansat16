@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+
+##Approx time to plot all = 200ms
 import os
 import signal
 import sys
@@ -98,7 +100,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     self.workerThread = Test()
     self.workerThread.mySignal.connect(self.on_change)
     
-    self.portEdit.setText('/dev/ttyACM0')
+    self.portEdit.setText('/dev/ttyACM5')
     self.baudRateEdit.setText('9600')
     self.failsafeCheck.stateChanged.connect(self.fail_safe)
     self.connectButton.clicked.connect(self.connect_cansat)
@@ -162,7 +164,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     if(self.gpsAltitudeCheck.isChecked()==True):
       self.altitudeAxis.plot(timeValues, gpsAltitudeValues,c='b')
     self.altitudeCanvas.draw()
-  
+    #millis = int(round(time.time() * 1000))
+    #print("t3:")
+    #print (millis)
   def plot_pressure(self,pressure):
     #TODO update only last point?
     
@@ -203,12 +207,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     
   def connect_cansat(self):
-    #check for multiple clicks
+    #better check for multiple clicks
+    self.connectButton.setEnabled(False)
     port = self.portEdit.text()
     baud = self.baudRateEdit.text()
+    
     self.pro = subprocess.Popen("python3 receiveData.py --port "+port+" --baud "+baud, shell=True,preexec_fn=os.setsid)
     self.zmqThread.start()
-    #subprocess.Popen("python3 iprint.py", shell=True)
     pass
   def telemetry_toggle(self):
     self.workerThread.start()
@@ -243,12 +248,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                               "Quit the GCS?",
                                               QMessageBox.Yes | QMessageBox.No)
     if choice == QMessageBox.Yes:
-      print("Exiting")
-      #self.pro.kill()
+      self.zmqThread.start()    #Why do you need to start thread to properly exit app
       try:
         os.killpg(self.pro.pid, signal.SIGTERM)
+        
       except:
         pass
+      print("Exiting")
       sys.exit()
     else:
       pass
@@ -299,10 +305,13 @@ class zmqWorker(QThread):
 
       # Set up a channel to receive work from the ventilator
       self.work_receiver = context.socket(zmq.REQ)
-      self.work_receiver.bind('tcp://127.0.0.1:5552')
+      self.work_receiver.bind('tcp://127.0.0.1:5540')
 
   def run(self):
     while True:
+      #millis = int(round(time.time() * 1000))
+      #print("t1:")
+      #print (millis)
       self.work_receiver.send('1'.encode("utf-8"))
       work_message = self.work_receiver.recv()  
       decoded = json.loads(work_message.decode("utf-8"))
@@ -329,7 +338,9 @@ class zmqWorker(QThread):
       self.timeSignal.emit(decoded["PacketCount"])
       #self.mySignal.emit(work_message.decode("utf-8"))
       self.voltageSignal.emit(decoded["Voltage"])
-    
+      #millis = int(round(time.time() * 1000))
+      #print("t2:")
+      #print (millis)
 
 if __name__ == '__main__':
   app = QApplication(sys.argv)
