@@ -85,14 +85,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     self.altitudeLayout.addWidget(self.altitudeCanvas)
     self.pressureLayout.addWidget(self.pressureCanvas)
     
-    self.temperatureToolbar = NavigationToolbar(self.temperatureCanvas, self)
-    self.temperatureLayout.addWidget(self.temperatureToolbar)
-    self.velocityToolbar = NavigationToolbar(self.velocityCanvas, self)
-    self.velocityLayout.addWidget(self.velocityToolbar)
-    self.altitudeToolbar = NavigationToolbar(self.altitudeCanvas, self)
-    self.altitudeLayout.addWidget(self.altitudeToolbar)
-    self.pressureToolbar = NavigationToolbar(self.pressureCanvas, self)
-    self.pressureLayout.addWidget(self.pressureToolbar)
+    #self.temperatureToolbar = NavigationToolbar(self.temperatureCanvas, self)
+    #self.temperatureLayout.addWidget(self.temperatureToolbar)
+    #self.velocityToolbar = NavigationToolbar(self.velocityCanvas, self)
+    #self.velocityLayout.addWidget(self.velocityToolbar)
+    #self.altitudeToolbar = NavigationToolbar(self.altitudeCanvas, self)
+    #self.altitudeLayout.addWidget(self.altitudeToolbar)
+    #self.pressureToolbar = NavigationToolbar(self.pressureCanvas, self)
+    #self.pressureLayout.addWidget(self.pressureToolbar)
     
     
     
@@ -102,6 +102,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     self.portEdit.setText('/dev/ttyACM5')
     self.baudRateEdit.setText('9600')
+    
+    
     self.failsafeCheck.stateChanged.connect(self.fail_safe)
     self.connectButton.clicked.connect(self.connect_cansat)
     self.telemetryButton.clicked.connect(self.telemetry_toggle)
@@ -118,6 +120,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #TODO update only last point?
     
     self.temperatureAxis.clear()
+    
+    self.temperatureAxis.set_xlabel('Time (s)')
+    self.temperatureAxis.set_ylabel('Temperature (°C)')
     
     if(int(timeValues[-1])<10):
       self.temperatureAxis.set_xlim(0,10)
@@ -136,6 +141,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     self.velocityAxis.clear()
     
+    self.velocityAxis.set_xlabel('Time (s)')
+    self.velocityAxis.set_ylabel('Velocity (m/s)')
+    
+    
     if(int(timeValues[-1])<10):
       self.velocityAxis.set_xlim(0,10)
     else:
@@ -152,6 +161,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #TODO update only last point?
     
     self.altitudeAxis.clear()
+        
+    self.altitudeAxis.set_xlabel('Time (s)')
+    self.altitudeAxis.set_ylabel('Altitude (m)')
     
     if(int(timeValues[-1])<10):
       self.altitudeAxis.set_xlim(0,10)
@@ -171,6 +183,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #TODO update only last point?
     
     self.pressureAxis.clear()
+    
+    self.pressureAxis.set_xlabel('Time (s)')
+    self.pressureAxis.set_ylabel('Pressure (Pa)')
     
     if(int(timeValues[-1])<10):
       self.pressureAxis.set_xlim(0,10)
