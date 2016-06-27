@@ -37,7 +37,7 @@ class storage:
  
     # Set up a channel to send work
     self.ventilator_send = self.context.socket(zmq.REP)
-    self.ventilator_send.connect('tcp://127.0.0.1:5540')
+    #self.ventilator_send.connect('tcp://127.0.0.1:5540')
     
     if not os.path.exists("test.csv"):
       with open("test.csv", "a") as myfile:
@@ -59,15 +59,19 @@ class storage:
           received = received + receive
         received = received.split('\r')[0]  
         readings = received.split(',')
+        print(received)
         if(received==""): 
           continue
         if(line==received):
           continue
-        if(readings[0]!='132'):
+        if(readings[1]!='1001'): #TODO change to team id
+          continue
+        print(readings[0]+"   "+readings[20])
+        if(readings[0]!=reading[20]!='sedsflag'): #TODO check
           continue
         #TODO acknowledge
         #comm.write(("Received"+str(readings[1])).encode('utf-8'));
-        with open("test.csv", "a") as myfile:
+        with open("final.csv", "a") as myfile:
           myfile.write(received+'\n')
         line = received
         print(readings[1])
@@ -77,23 +81,30 @@ class storage:
         if(flag==0):
           continue
 
-        
+        print(line)
         jsonReadings = {}
-        jsonReadings["TeamID"] = readings[0]
-        jsonReadings["PacketCount"] = readings[1]
-        jsonReadings["AltSensor"] = readings[2]
-        jsonReadings["Pressure"] = readings[3]
-        jsonReadings["Speed"] = readings[4]
-        jsonReadings["Temp"] = readings[5]
-        jsonReadings["Voltage"] = readings[6]
-        jsonReadings["GPSLatitude"] = readings[7]
-        jsonReadings["GPSLongitude"] = readings[8]
-        jsonReadings["GPSAltitude"] = readings[9]
-        jsonReadings["GPSSatNum"] = readings[10]
-        jsonReadings["GPSSpeed"] = readings[11]
-        jsonReadings["CommandTime"] = readings[12]
-        jsonReadings["CommandCount"] = readings[13]
-         
+        jsonReadings["flag"] = readings[0]
+        jsonReadings["TeamID"] = readings[1]
+        jsonReadings["MissionTime"] = readings[2]
+        jsonReadings["PacketCount"] = readings[3]
+        jsonReadings["AltSensor"] = readings[4]
+        jsonReadings["Pressure"] = readings[5]
+        jsonReadings["Speed"] = readings[6]
+        jsonReadings["InTemp"] = readings[7]
+        jsonReadings["Voltage"] = readings[8]
+        jsonReadings["GPSLatitude"] = readings[9]
+        jsonReadings["GPSLatChar"] = readings[10]
+        jsonReadings["GPSLongitude"] = readings[11]
+        jsonReadings["GPSLonChar"] = readings[12]
+        jsonReadings["GPSAltitude"] = readings[13]
+        jsonReadings["GPSSatNum"] = readings[14]
+        jsonReadings["GPSSpeed"] = readings[15]
+        jsonReadings["LastCommandTime"] = readings[16]
+        jsonReadings["CommandCount"] = readings[17]
+        jsonReadings["State"] = readings[18]
+        jsonReadings["OutTemp"] = readings[19]
+        jsonReadings["flag2"] = readings[20] 
+        
         json_data = json.dumps(jsonReadings)
        
         msg = self.ventilator_send.recv()
