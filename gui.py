@@ -126,7 +126,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
   #check if plot corresponding to check box correct
   def plot_temperature(self,temp):
-    #TODO update only last point?
+    #TODO update only last point
     
     self.temperatureAxis.clear()
     
@@ -149,7 +149,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.temperatureCanvas.draw()
     
   def plot_velocity(self,velocity):
-    #TODO update only last point?
+    #TODO update only last point
     
     self.velocityAxis.clear()
     
@@ -173,7 +173,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.velocityCanvas.draw()
     
   def plot_altitude(self,alt):
-    #TODO update only last point?
+    #TODO update only last point
     
     self.altitudeAxis.clear()
         
@@ -198,7 +198,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #print("t3:")
     #print (millis)
   def plot_pressure(self,pressure):
-    #TODO update only last point?
+    #TODO update only last point
     
     self.pressureAxis.clear()
     
@@ -219,7 +219,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pressureCanvas.draw()
     
   def update_teamId(self,teamId):
-    self.teamIdText.setText('Team Id: 1001')
+    self.teamIdText.setText('Team Id: 1001')		#Because of unreliable data from the glider
     
   def update_packetcount(self,time):
     self.missionTimeText.setText(time+'s')
@@ -260,7 +260,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     port = self.portEdit.text()
     baud = self.baudRateEdit.text()
     
-    self.pro = subprocess.Popen("python3 \"receiveData (another copy).py\" --port "+port+" --baud "+baud, shell=True,preexec_fn=os.setsid)
+    self.pro = subprocess.Popen("python3 \"receiveData.py\" --port "+port+" --baud "+baud, shell=True,preexec_fn=os.setsid)
     self.zmqThread.start()
     pass
   def telemetry_toggle(self):
